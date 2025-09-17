@@ -1,0 +1,263 @@
+{
+  "name": "Auto-gmail-promotional-mail-deleter",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "delete",
+        "messageId": "={{ $json.id }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1184,
+        -16
+      ],
+      "id": "a9d124fa-6910-488a-9025-10b6da62e197",
+      "name": "Delete a message",
+      "webhookId": "47312073-e6b6-4b9e-b795-f370e55b2333",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ffvYEpuUHeEo8giJ",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": true,
+        "filters": {
+          "q": "=category:promotions",
+          "receivedBefore": "2025-09-01T00:00:00"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        896,
+        -16
+      ],
+      "id": "0d390b46-74b5-4ca4-a092-f32193c6a10e",
+      "name": "Get many messages",
+      "webhookId": "83c5ecd8-9934-46a8-9b72-acee8a5bb5d1",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ffvYEpuUHeEo8giJ",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        64,
+        0
+      ],
+      "id": "b8eac823-c138-4b36-80c7-2b084a52ca63",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "chatId": "1014408680",
+        "text": "Hi Vivek! your Promotional mail are going to get deleted.",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "Continue",
+                    "additionalFields": {
+                      "callback_data": "Continue_Cleanup"
+                    }
+                  },
+                  {
+                    "text": "Cancel",
+                    "additionalFields": {
+                      "callback_data": "Cancel_Cleanup"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        336,
+        0
+      ],
+      "id": "cb907e29-2432-4d74-9936-e74811a2dbcf",
+      "name": "Send a text message",
+      "webhookId": "6d0cdaa4-ffb6-46c2-82fc-406a825843e7",
+      "credentials": {
+        "telegramApi": {
+          "id": "bOHyNjQ7ci767EpW",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "callback_query"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        48,
+        192
+      ],
+      "id": "c76d7171-aaba-4349-b4fd-8f311b3502ab",
+      "name": "Telegram Trigger",
+      "webhookId": "b3e183df-61a8-48d7-83eb-73cc4fab16ad",
+      "credentials": {
+        "telegramApi": {
+          "id": "bOHyNjQ7ci767EpW",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6fd6cd52-bd3d-4814-8dfb-9c57e0f81683",
+              "leftValue": "={{ $json.callback_query.data }}",
+              "rightValue": "=Continue_Cleanup",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        400,
+        192
+      ],
+      "id": "5c5e8b67-fe99-4fdb-9e7f-7b915a1c9855",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "chatId": "1014408680",
+        "text": "=Cleanup cancelled For Today.Have a Good day",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1088,
+        208
+      ],
+      "id": "4636d141-635c-43d2-91d8-6f0e070068cf",
+      "name": "Send a text message1",
+      "webhookId": "ec34a6a7-3ced-4a5b-a39e-e1b400c60f9b",
+      "credentials": {
+        "telegramApi": {
+          "id": "bOHyNjQ7ci767EpW",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get many messages": {
+      "main": [
+        [
+          {
+            "node": "Delete a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        []
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get many messages",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4e00a633-0360-4e00-b548-e263c4afd366",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3e8addf86256aa12887fd8434e5198e8098bfa4ed9511b1be0bed38c0f46a6cb"
+  },
+  "id": "S7V8QNWdiPlIPWtH",
+  "tags": []
+}
