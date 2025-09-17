@@ -1,7 +1,7 @@
 <img width="719" height="341" alt="image" src="https://github.com/user-attachments/assets/ee600d3d-ebba-4ece-9bb9-826298d94f22" />
 
 
-# Gmail Promotional Mail Auto-Deleter 🗂️
+# Gmail Promotional Mail Auto-Cleanup 🗂️
 
 An automated n8n workflow that intelligently deletes promotional emails from your Gmail account with Telegram-based user confirmation for safety and control.
 
